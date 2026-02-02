@@ -79,9 +79,11 @@ npm install
 
 3. Create a `.env` file in the backend directory:
 ```env
-MONGODB_URI=<REDACTED_USERNAME>:<REDACTED_PASSWORD>@taskpilot-cluster.<REDACTED>.mongodb.net/taskpilot?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority
 PORT=5000
 ```
+
+**⚠️ Security Note:** Replace `<username>`, `<password>`, `<cluster-url>`, and `<database>` with your actual MongoDB Atlas credentials. Never commit the `.env` file to version control.
 
 4. Start the development server:
 ```bash
