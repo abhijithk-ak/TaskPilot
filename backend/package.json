@@ -1,0 +1,29 @@
+{
+  "name": "taskpilot-backend",
+  "version": "1.0.0",
+  "description": "TaskPilot backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "mongoose": "^7.5.0",
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "taskpilot",
+    "task-management",
+    "api",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "MIT"
+}
