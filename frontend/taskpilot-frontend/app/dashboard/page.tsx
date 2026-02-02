@@ -107,28 +107,67 @@ export default function DashboardPage() {
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  const isSameDay = (d1: Date, d2: Date) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
+  const dayAfterTomorrow = new Date(today);
+  dayAfterTomorrow.setDate(today.getDate() + 2);
 
-  // Group tasks
-  const todayTasks = tasks.filter(task => {
+  // Priority ranking for sorting
+  const priorityRank: Record<string, number> = {
+    high: 1,
+    medium: 2,
+    low: 3
+  };
+
+  // Sort tasks by priority → due date → created time
+  const sortTasks = (taskList: any[]) =>
+    [...taskList].sort((a, b) => {
+      // 1. Priority first
+      if (priorityRank[a.priority] !== priorityRank[b.priority]) {
+        return priorityRank[a.priority] - priorityRank[b.priority];
+      }
+
+      // 2. Due date second
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+
+      // 3. Created time as tie-breaker
+      if (a.createdAt && b.createdAt) {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+
+      return 0;
+    });
+
+  // Group tasks with normalized dates
+  const todayTasks = sortTasks(tasks.filter(task => {
     if (!task.dueDate) return false;
-    return isSameDay(new Date(task.dueDate), today);
-  });
+    const due = new Date(task.dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due.getTime() === today.getTime();
+  }));
 
-  const tomorrowTasks = tasks.filter(task => {
+  const tomorrowTasks = sortTasks(tasks.filter(task => {
     if (!task.dueDate) return false;
-    return isSameDay(new Date(task.dueDate), tomorrow);
-  });
+    const due = new Date(task.dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due.getTime() === tomorrow.getTime();
+  }));
 
-  const overdueTasks = tasks.filter(task => {
+  const upcomingTasks = sortTasks(tasks.filter(task => {
     if (!task.dueDate) return false;
-    return new Date(task.dueDate) < today;
-  });
+    const due = new Date(task.dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due >= dayAfterTomorrow;
+  }));
 
-  const noDueDateTasks = tasks.filter(task => !task.dueDate);
+  const overdueTasks = sortTasks(tasks.filter(task => {
+    if (!task.dueDate) return false;
+    const due = new Date(task.dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due < today;
+  }));
+
+  const noDueDateTasks = sortTasks(tasks.filter(task => !task.dueDate));
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -158,7 +197,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '30px', background: '#f8fafc' }}>
+      <div className="page-background" style={{ flex: 1, padding: '30px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h1>Dashboard</h1>
           <button 
@@ -190,9 +229,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Three Column Layout */}
-        <div className="dashboard-grid">
-          {/* Today Column */}
+        {/* Four Column Layout - Conditionally show Upcoming/Overdue */}
+        <div className="dashboard-grid" style={{ 
+          gridTemplateColumns: `repeat(${2 + (upcomingTasks.length > 0 ? 1 : 0) + (overdueTasks.length > 0 ? 1 : 0)}, 1fr)` 
+        }}>
+          {/* Today Column - Always Show */}
           <div className="task-column today-column">
             <div className="column-header">
               <h2>📌 Today</h2>
@@ -209,7 +250,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Tomorrow Column */}
+          {/* Tomorrow Column - Always Show */}
           <div className="task-column tomorrow-column">
             <div className="column-header">
               <h2>📅 Tomorrow</h2>
@@ -226,22 +267,35 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Overdue Column */}
-          <div className="task-column overdue-column">
-            <div className="column-header">
-              <h2>⚠️ Overdue</h2>
-              <span className="task-count">{overdueTasks.length}</span>
-            </div>
-            <div className="column-content">
-              {overdueTasks.length > 0 ? (
-                overdueTasks.map(task => (
+          {/* Upcoming Column - Show Only If Tasks Exist */}
+          {upcomingTasks.length > 0 && (
+            <div className="task-column upcoming-column">
+              <div className="column-header">
+                <h2>📅 Upcoming</h2>
+                <span className="task-count">{upcomingTasks.length}</span>
+              </div>
+              <div className="column-content">
+                {upcomingTasks.map(task => (
                   <TaskCard key={task._id || task.id} task={task} onEdit={handleEdit} onDelete={handleDelete} />
-                ))
-              ) : (
-                <div className="empty-state">All caught up! 🎉</div>
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Overdue Column - Show Only If Tasks Exist */}
+          {overdueTasks.length > 0 && (
+            <div className="task-column overdue-column">
+              <div className="column-header">
+                <h2>⚠️ Overdue</h2>
+                <span className="task-count">{overdueTasks.length}</span>
+              </div>
+              <div className="column-content">
+                {overdueTasks.map(task => (
+                  <TaskCard key={task._id || task.id} task={task} onEdit={handleEdit} onDelete={handleDelete} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* No Due Date Section (Below Grid) */}
