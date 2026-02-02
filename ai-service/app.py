@@ -18,7 +18,7 @@ def predict():
         priority = 'medium'  # default
         if any(word in text for word in ['urgent', 'asap', 'immediately', 'critical', 'emergency']):
             priority = 'high'
-        elif any(word in text for word in ['later', 'sometime', 'eventually', 'when possible']):
+        elif any(word in text for word in ['later', 'sometime', 'eventually', 'when possible', 'low']):
             priority = 'low'
         
         # Status classification

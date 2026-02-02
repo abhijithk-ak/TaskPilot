@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema(
   {
+    userEmail: {
+      type: String,
+      required: true,
+      trim: true
+    },
     title: {
       type: String,
       required: true,
@@ -9,7 +14,7 @@ const taskSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      required: false,
       trim: true
     },
     priority: {
@@ -21,6 +26,10 @@ const taskSchema = new mongoose.Schema(
       type: String,
       enum: ['todo', 'progress', 'done'],
       default: 'todo'
+    },
+    dueDate: {
+      type: Date,
+      required: false
     }
   },
   { 

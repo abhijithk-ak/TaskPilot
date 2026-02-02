@@ -12,7 +12,9 @@ exports.createTask = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const { userEmail } = req.query;
+    const filter = userEmail ? { userEmail } : {};
+    const tasks = await Task.find(filter);
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ error: error.message });
