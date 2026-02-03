@@ -197,24 +197,35 @@ body {
   border-color: #e5e7eb;
 }
 
+/* Completed tasks in Today bucket - readable and respectful */
 .task-card.done {
-  opacity: 0.6;
-  background: #f8fafc;
+  opacity: 0.9;
+  background: #f0fdf4;
+  border-left-color: #22c55e !important;
 }
 
 .task-card.done .task-title {
   text-decoration: line-through;
-  color: #9ca3af;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: #9ca3af;
+  color: #374151;
+  font-weight: 500;
 }
 
 .task-card.done .task-desc {
-  color: #d1d5db;
+  color: #6b7280;
 }
 
-/* Completed archive section - archive feel with green accent */
+.task-card.done .status-badge.done {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Completed archive section - clear historical reference */
 .completed-section .task-card {
-  opacity: 0.85;
-  background: #f9fafb;
+  opacity: 0.9;
+  background: #fafafa;
   border: 1px solid #e5e7eb;
   border-left: 3px solid #22c55e;
 }
@@ -222,20 +233,29 @@ body {
 .completed-section .task-card:hover {
   opacity: 1;
   background: #ffffff;
+  border-color: #d1d5db;
 }
 
 .completed-section .task-card .task-title {
   text-decoration: line-through;
-  color: #4b5563;
-  font-weight: 500;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: #9ca3af;
+  color: #1f2937;
+  font-weight: 600;
 }
 
 .completed-section .task-card .task-desc {
-  color: #9ca3af;
+  color: #6b7280;
 }
 
 .completed-section .task-card .due-date {
-  color: #d1d5db;
+  color: #9ca3af;
+}
+
+.completed-section .task-card .status-badge.done {
+  background: #22c55e;
+  color: white;
+  font-weight: 600;
 }
 
 /* Disable edit button in completed section */
