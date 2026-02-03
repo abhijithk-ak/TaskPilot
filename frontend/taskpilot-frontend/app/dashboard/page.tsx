@@ -373,28 +373,29 @@ export default function DashboardPage() {
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {totalTodayCount > 0 && (
-              <>
-                <div style={{ 
-                  width: '120px', 
-                  height: '6px', 
-                  background: '#e5e7eb', 
-                  borderRadius: '3px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${todayCompletionPercentage}%`,
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #10b981, #3b82f6)',
-                    borderRadius: '3px',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-                <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                  {todayCompletionPercentage}% done today
-                </span>
-              </>
-            )}
+            <div style={{ 
+              width: '120px', 
+              height: '6px', 
+              background: '#e5e7eb', 
+              borderRadius: '3px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: totalTodayCount > 0 ? `${todayCompletionPercentage}%` : '100%',
+                height: '100%',
+                background: totalTodayCount > 0 
+                  ? 'linear-gradient(90deg, #10b981, #3b82f6)'
+                  : 'linear-gradient(90deg, #d1d5db, #e5e7eb)',
+                borderRadius: '3px',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+            <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              {totalTodayCount > 0 
+                ? `${todayCompletionPercentage}% done today`
+                : 'No tasks scheduled for today'
+              }
+            </span>
           </div>
         </div>
 
@@ -467,7 +468,30 @@ export default function DashboardPage() {
                   <TaskCard key={task._id || task.id} task={task} onEdit={handleEdit} onDelete={handleDelete} />
                 ))
               ) : (
-                <div className="empty-state">No tasks for today</div>
+                <div style={{
+                  textAlign: 'center',
+                  padding: '40px 20px',
+                  color: '#6b7280',
+                  fontSize: '14px'
+                }}>
+                  <div style={{ 
+                    fontSize: '32px', 
+                    marginBottom: '12px',
+                    opacity: 0.6
+                  }}>
+                    ✨
+                  </div>
+                  <div style={{ 
+                    fontWeight: 500, 
+                    marginBottom: '6px',
+                    color: '#4b5563'
+                  }}>
+                    Enjoy the calm
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#9ca3af' }}>
+                    Nothing scheduled today
+                  </div>
+                </div>
               )}
               
               {/* Success message when all today's tasks are completed */}
