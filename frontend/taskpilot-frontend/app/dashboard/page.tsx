@@ -468,6 +468,35 @@ export default function DashboardPage() {
               ) : (
                 <div className="empty-state">No tasks for today</div>
               )}
+              
+              {/* Success message when all today's tasks are completed */}
+              {totalTodayCount > 0 && todayCompletionPercentage === 100 && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+                  border: '1px solid #86efac',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  marginTop: todayTasks.length > 0 ? '12px' : '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}>
+                  <span style={{ fontSize: '20px' }}>✅</span>
+                  <div>
+                    <div style={{ 
+                      fontSize: '13px', 
+                      fontWeight: 600, 
+                      color: '#166534',
+                      marginBottom: '2px'
+                    }}>
+                      All tasks completed for today!
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#15803d' }}>
+                      Great job on staying productive.
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -573,7 +602,7 @@ export default function DashboardPage() {
                 <TaskCard 
                   key={task._id || task.id} 
                   task={task} 
-                  onEdit={undefined} 
+                  onEdit={undefined}
                   onDelete={handleDelete} 
                 />
               ))}

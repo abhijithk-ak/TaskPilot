@@ -211,20 +211,38 @@ body {
   color: #d1d5db;
 }
 
-/* Completed archive section - normal opacity with green accent */
+/* Completed archive section - archive feel with green accent */
 .completed-section .task-card {
+  opacity: 0.85;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-left: 3px solid #22c55e;
+}
+
+.completed-section .task-card:hover {
   opacity: 1;
   background: #ffffff;
-  border-left-color: #22c55e;
 }
 
 .completed-section .task-card .task-title {
   text-decoration: line-through;
   color: #4b5563;
+  font-weight: 500;
 }
 
 .completed-section .task-card .task-desc {
-  color: #6b7280;
+  color: #9ca3af;
+}
+
+.completed-section .task-card .due-date {
+  color: #d1d5db;
+}
+
+/* Disable edit button in completed section */
+.completed-section .btn.edit {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .task-card h4 {
