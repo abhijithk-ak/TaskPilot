@@ -102,27 +102,29 @@ export default function DashboardPage() {
 
   if (!mounted) return null;
 
-  // Separate active and completed tasks
-  const activeTasksList = tasks.filter(t => t.status !== 'done');
-  const completedTasksList = tasks.filter(t => t.status === 'done');
-
   // Date helper logic
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // Analytics
-  const totalTasks = tasks.length;
-  const completedTasksCount = completedTasksList.length;
-  const activeTasksCount = activeTasksList.length;
-  const overdueCount = activeTasksList.filter(
-    t => t.dueDate && new Date(t.dueDate) < today
-  ).length;
 
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
   const dayAfterTomorrow = new Date(today);
   dayAfterTomorrow.setDate(today.getDate() + 2);
+
+  // Helper function to check if date is today
+  const isToday = (dateString: string) => {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date.getTime() === today.getTime();
+  };
+
+  // Helper function to check if date is in the past
+  const isPast = (dateString: string) => {
+    const date = new Date(dateString);
+    date.setHours(0, 0, 0, 0);
+    return date < today;
+  };
 
   // Priority ranking for sorting
   const priorityRank: Record<string, number> = {
@@ -131,7 +133,7 @@ export default function DashboardPage() {
     low: 3
   };
 
-  // Sort tasks by priority, due date, created time (no need for done check in active tasks)
+  // Sort tasks by priority, due date, created time
   const sortTasks = (taskList: any[]) =>
     [...taskList].sort((a, b) => {
       // 1. Priority first
@@ -152,48 +154,57 @@ export default function DashboardPage() {
       return 0;
     });
 
-  // Group active tasks with normalized dates
-  const todayTasks = sortTasks(activeTasksList.filter(task => {
+  // ✅ Rule 1: Today bucket - ALL today's tasks (active first, completed last)
+  const allTodayTasks = tasks.filter(task => {
     if (!task.dueDate) return false;
-    const due = new Date(task.dueDate);
-    due.setHours(0, 0, 0, 0);
-    return due.getTime() === today.getTime();
-  }));
+    return isToday(task.dueDate);
+  });
+  
+  const activeTodayTasks = sortTasks(allTodayTasks.filter(t => t.status !== 'done'));
+  const completedTodayTasks = sortTasks(allTodayTasks.filter(t => t.status === 'done'));
+  const todayTasks = [...activeTodayTasks, ...completedTodayTasks]; // Active first, completed last
 
   // Today-specific metrics for completion percentage
-  const todayCompletedTasks = completedTasksList.filter(task => {
-    if (!task.dueDate) return 0;
-    const due = new Date(task.dueDate);
-    due.setHours(0, 0, 0, 0);
-    return due.getTime() === today.getTime();
-  }).length;
-  const totalTodayTasks = todayTasks.length + todayCompletedTasks;
-  const todayCompletionPercentage = totalTodayTasks > 0 
-    ? Math.round((todayCompletedTasks / totalTodayTasks) * 100) 
+  const todayCompletedCount = completedTodayTasks.length;
+  const totalTodayCount = allTodayTasks.length;
+  const todayCompletionPercentage = totalTodayCount > 0 
+    ? Math.round((todayCompletedCount / totalTodayCount) * 100) 
     : 0;
 
-  const tomorrowTasks = sortTasks(activeTasksList.filter(task => {
+  // ✅ Rule 2: Tomorrow bucket - only active tomorrow tasks
+  const tomorrowTasks = sortTasks(tasks.filter(task => {
     if (!task.dueDate) return false;
     const due = new Date(task.dueDate);
     due.setHours(0, 0, 0, 0);
-    return due.getTime() === tomorrow.getTime();
+    return due.getTime() === tomorrow.getTime() && task.status !== 'done';
   }));
 
-  const overdueTasks = sortTasks(activeTasksList.filter(task => {
+  // ✅ Rule 2: Overdue bucket - past due AND not completed
+  const overdueTasks = sortTasks(tasks.filter(task => {
+    if (!task.dueDate) return false;
+    return isPast(task.dueDate) && task.status !== 'done';
+  }));
+
+  // ✅ Rule 2: Upcoming bucket - future (day after tomorrow+) AND not completed
+  const upcomingTasks = sortTasks(tasks.filter(task => {
     if (!task.dueDate) return false;
     const due = new Date(task.dueDate);
     due.setHours(0, 0, 0, 0);
-    return due < today;
+    return due >= dayAfterTomorrow && task.status !== 'done';
   }));
 
-  const upcomingTasks = sortTasks(activeTasksList.filter(task => {
-    if (!task.dueDate) return false;
-    const due = new Date(task.dueDate);
-    due.setHours(0, 0, 0, 0);
-    return due >= dayAfterTomorrow;
-  }));
+  // ✅ Rule 3: Completed section - ALL completed tasks NOT from today
+  const completedArchiveTasks = sortTasks(
+    tasks.filter(t => t.status === 'done' && (!t.dueDate || !isToday(t.dueDate)))
+  ).reverse(); // Most recent first
 
-  const noDueDateTasks = sortTasks(activeTasksList.filter(task => !task.dueDate));
+  const noDueDateTasks = sortTasks(tasks.filter(task => !task.dueDate && task.status !== 'done'));
+
+  // Analytics
+  const totalTasks = tasks.length;
+  const completedTasksCount = tasks.filter(t => t.status === 'done').length;
+  const activeTasksCount = tasks.filter(t => t.status !== 'done').length;
+  const overdueCount = overdueTasks.length;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -361,7 +372,7 @@ export default function DashboardPage() {
             )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {totalTodayTasks > 0 && (
+            {totalTodayCount > 0 && (
               <>
                 <div style={{ 
                   width: '120px', 
@@ -427,11 +438,13 @@ export default function DashboardPage() {
               margin: 0,
               lineHeight: '1.5'
             }}>
-              {todayTasks.length > 0 
-                ? `You're most productive between 10 AM and 12 PM. Focus on "${todayTasks[0].title}" next.`
-                : activeTasksList.length > 0
-                ? `Great start! You're most productive between 10 AM and 12 PM. Consider scheduling "${activeTasksList[0].title}" for today.`
-                : 'You have a clean slate today! Add tasks to get AI-powered productivity insights.'
+              {activeTodayTasks.length > 0 
+                ? `You're most productive between 10 AM and 12 PM. Focus on "${activeTodayTasks[0].title}" next.`
+                : todayTasks.length > 0
+                ? `Great work! All today's tasks are completed. Consider planning for tomorrow.`
+                : tasks.filter(t => t.status !== 'done').length > 0
+                ? `You're most productive between 10 AM and 12 PM. Consider scheduling tasks for today.`
+                : 'You have a clean slate! Add tasks to get AI-powered productivity insights.'
               }
             </p>
           </div>
@@ -518,25 +531,37 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Completed Tasks Section */}
-        {showCompleted && completedTasksList.length > 0 && (
+        {/* ✅ Rule 3: Completed Archive Section (All completed tasks NOT from today) */}
+        {showCompleted && completedArchiveTasks.length > 0 && (
           <div className="completed-section" style={{ marginTop: '30px' }}>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px',
-              marginBottom: '15px'
+              marginBottom: '15px',
+              padding: '14px 20px',
+              background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+              borderRadius: '10px',
+              border: '1px solid #86efac'
             }}>
-              <h2 style={{ margin: 0 }}>✅ Completed Tasks</h2>
+              <h2 style={{ margin: 0, color: '#166534', fontSize: '18px', fontWeight: 600 }}>✅ Completed Archive</h2>
               <span style={{ 
-                background: '#dcfce7', 
-                color: '#166534', 
+                background: '#166534', 
+                color: 'white', 
                 padding: '4px 10px', 
                 borderRadius: '12px', 
                 fontSize: '13px',
                 fontWeight: 600 
               }}>
-                {completedTasksList.length}
+                {completedArchiveTasks.length}
+              </span>
+              <span style={{ 
+                fontSize: '12px', 
+                color: '#15803d', 
+                marginLeft: 'auto',
+                fontStyle: 'italic'
+              }}>
+                Reference & History
               </span>
             </div>
             <div style={{ 
@@ -544,10 +569,13 @@ export default function DashboardPage() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
               gap: '12px' 
             }}>
-              {completedTasksList.map(task => (
-                <div key={task._id || task.id} style={{ opacity: 0.7 }}>
-                  <TaskCard task={task} onEdit={handleEdit} onDelete={handleDelete} />
-                </div>
+              {completedArchiveTasks.map(task => (
+                <TaskCard 
+                  key={task._id || task.id} 
+                  task={task} 
+                  onEdit={undefined} 
+                  onDelete={handleDelete} 
+                />
               ))}
             </div>
           </div>
