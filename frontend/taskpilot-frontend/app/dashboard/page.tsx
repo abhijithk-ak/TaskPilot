@@ -210,15 +210,20 @@ export default function DashboardPage() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       
-      {/* Sidebar */}
+      {/* Sidebar - Fixed positioning */}
       <div style={{
+        position: 'fixed',
+        left: 0,
+        top: 0,
         width: '240px',
+        height: '100vh',
         background: '#1f2937',
         color: 'white',
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        overflowY: 'auto'
       }}>
         <div>
           {/* Logo Section */}
@@ -304,8 +309,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="page-background" style={{ flex: 1, padding: '30px' }}>
+      {/* Main Content - with left margin for fixed sidebar */}
+      <div className="page-background" style={{ flex: 1, marginLeft: '240px', padding: '30px' }}>
         {/* Header with Date */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div>
