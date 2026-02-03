@@ -50,6 +50,8 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
   const [dueDate, setDueDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [isClassifying, setIsClassifying] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState<number | null>(null);
+  const [aiReason, setAiReason] = useState<string>("");
 
   // Pre-fill form when editing
   useEffect(() => {
@@ -59,12 +61,16 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
       setPriority(editingTask.priority || "medium");
       setStatus(editingTask.status || "todo");
       setDueDate(editingTask.dueDate ? editingTask.dueDate.split('T')[0] : "");
+      setAiConfidence(null);
+      setAiReason("");
     } else {
       setTitle("");
       setDescription("");
       setPriority("medium");
       setStatus("todo");
       setDueDate("");
+      setAiConfidence(null);
+      setAiReason("");
     }
   }, [editingTask]);
 
@@ -77,6 +83,9 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
     }
 
     setIsClassifying(true);
+    setAiConfidence(null);
+    setAiReason("");
+    
     try {
       const res = await fetch("http://localhost:5000/tasks/classify", {
         method: "POST",
@@ -95,6 +104,10 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
       // Auto-fill priority and status from AI
       setPriority(data.priority || "medium");
       setStatus(data.status || "todo");
+      
+      // Store AI confidence and reason
+      setAiConfidence(data.confidence || 0);
+      setAiReason(data.reason || "AI classification completed");
     } catch (err: any) {
       alert("AI classification failed. Make sure AI service is running.");
       console.error("Classification error:", err);
@@ -169,6 +182,51 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
         >
           {isClassifying ? "🤖 Analyzing..." : "🤖 Auto-Categorize"}
         </button>
+
+        {aiConfidence !== null && aiReason && (
+          <div style={{
+            background: '#f0f9ff',
+            border: '1px solid #bae6fd',
+            borderRadius: '6px',
+            padding: '10px 12px',
+            marginBottom: '12px',
+            fontSize: '13px'
+          }}>
+            <div style={{ 
+              fontWeight: '600', 
+              color: '#0369a1', 
+              marginBottom: '4px',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <span>🤖 Auto-categorized • </span>
+              <span className={
+                aiConfidence >= 0.7 ? 'confidence-high' :
+                aiConfidence >= 0.5 ? 'confidence-medium' :
+                'confidence-low'
+              }>
+                {Math.round(aiConfidence * 100)}% confident
+              </span>
+              <div className="tooltip-container">
+                <span className="tooltip-icon">i</span>
+                <div className="tooltip-content" style={{ 
+                  whiteSpace: 'normal', 
+                  width: '220px',
+                  textAlign: 'left',
+                  lineHeight: '1.4'
+                }}>
+                  <div style={{ fontWeight: '600', marginBottom: '6px' }}>Confidence is based on:</div>
+                  <div>• Keyword match strength</div>
+                  <div>• Number of signals detected</div>
+                  <div>• Task description clarity</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ color: '#0c4a6e', fontSize: '12px' }}>
+              {aiReason}
+            </div>
+          </div>
+        )}
 
         <div className="row">
           <select value={priority} onChange={(e) => setPriority(e.target.value)}>

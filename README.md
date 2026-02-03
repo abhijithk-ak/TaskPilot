@@ -1,6 +1,15 @@
 # TaskPilot
 
-A smart task management system with AI-powered task classification featuring a modern three-column dashboard and user-based task isolation.
+A smart task management system with AI-powered task classification featuring a modern dashboard and user-based task isolation.
+
+## 🔐 Security Notice
+
+**All credentials have been removed and replaced with placeholders.**  
+Environment variables are managed via `.env` files which are **not committed** to version control.
+
+- MongoDB credentials have been rotated
+- `.env.example` files provided for reference
+- Git history has been cleaned of sensitive data
 
 ## Project Structure
 
@@ -65,72 +74,110 @@ TaskPilot/
 - MongoDB Atlas account (or local MongoDB)
 - Git
 
-### Backend Setup
+### 1. Backend Setup
 
-1. Navigate to the backend directory:
+Navigate to the backend directory:
 ```bash
 cd backend
 ```
 
-2. Install dependencies:
+Install dependencies:
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the backend directory:
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority
-PORT=5000
+Create `.env` file from template:
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Edit .env and add your MongoDB credentials
+# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority
 ```
 
-**⚠️ Security Note:** Replace `<username>`, `<password>`, `<cluster-url>`, and `<database>` with your actual MongoDB Atlas credentials. Never commit the `.env` file to version control.
+**⚠️ Important:** 
+- Replace `<username>`, `<password>`, `<cluster-url>`, and `<database>` with your actual MongoDB Atlas credentials
+- Never commit the `.env` file to version control
+- The `.env` file is already in `.gitignore`
 
-4. Start the development server:
+Start the development server:
 ```bash
 npm run dev
 ```
 
-The backend will run on `http://localhost:5000`
+Backend will run on `http://localhost:5000`
 
-### AI Service Setup
+### 2. AI Service Setup
 
-1. Navigate to the ai-service directory:
+Navigate to the ai-service directory:
 ```bash
 cd ai-service
 ```
 
-2. Create and activate a virtual environment:
+Create and activate a virtual environment:
 ```bash
 python -m venv venv
+
 # On Windows:
 .\venv\Scripts\Activate.ps1
-# On macOS/Linux:
-source venv/bin/activate
-```
 
-3. Install dependencies:
+### 3. Frontend Setup
+
+Navigate to the frontend directory:
 ```bash
-pip install -r requirements.txt
+cd frontend/taskpilot-frontend
 ```
-?userEmail=<email>` - Get tasks filtered by user email
-- `POST /tasks` - Create a new task (requires userEmail in body)
-- `GET /tasks/:id` - Get task by ID
-- `PUT /tasks/:id` - Update task
-- `DELETE /tasks/:id` - Delete task
-- `POST /tasks/classify` - Classify task using AI service
 
-### AI Service (Port 8000)
-- `GET /health` - Health check
-- `POST /predict` - Predict task priority and status
-  - Request: `{ "description": "task description" }`
-  - Response: `{ "priority": "high|medium|low", "status": "todo|progress|done", "confidence": 0.85 }`
+Install dependencies:
+```bash
+npm install
+```
 
-## Usage
+Start the development server:
+```bash
+npm run dev
+```
 
-1. **Login**: Enter your email on the home page
-2. **Dashboard**: View tasks organized by date (Today, Tomorrow, Overdue)
-3. **Create Task**: Click "+ Add Task" button
-4. **AI Classification**: Enter description and click "🤖 Auto-Categorize" to auto-fill priority/status
+Frontend will run on `http://localhost:3000`
+
+### Quick Start (All Services)
+
+For convenience, use the batch script (Windows):
+```bash
+start-services.bat
+```
+
+Or start manually in separate terminals:
+```bash
+# Terminal 1 - Backend
+cd backend && npm run dev
+
+# Terminal 2 - AI Service
+cd ai-service && python app.py
+
+# Terminal 3 - Frontend
+cd frontend/taskpilot-frontend && npm run dev
+```
+
+## 🤖 AI Task Classifier
+
+A lightweight NLP-based classifier that predicts task priority and status using **keyword heuristics with confidence scoring**.
+
+**How it works:**
+- Analyzes task descriptions for priority keywords (urgent, ASAP, important, etc.)
+- Returns priority (high/medium/low) and status (todo/in-progress/done)
+- Provides confidence score (0-1) based on keyword match strength
+- Explains reasoning with detected keywords
+
+**Key Features:**
+- ✅ No external ML APIs required
+- ✅ Fast inference (<100ms)
+- ✅ Explainable predictions with confidence metrics
+- ✅ Keyword-based heuristics optimized for task management
+
+This approach demonstrates **practical ML integration** without over-engineering, making it ideal for hackathons and interview projects.
+
+## API Endpoints**AI Classification**: Enter description and click "🤖 Auto-Categorize" to auto-fill priority/status
 5. **Edit Task**: Click "Edit" button on any task card
 6. **Delete Task**: Click "Delete" button with confirmation
 7. **Analytics**: View real-time metrics at the top of dashboard
