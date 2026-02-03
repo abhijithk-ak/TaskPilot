@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, LogOut, Pin, Calendar, AlertTriangle, Plus } from 'lucide-react';
+import { LayoutDashboard, LogOut, Pin, Calendar, AlertTriangle, Plus, ChevronDown } from 'lucide-react';
 import TaskCard from '@/components/TaskCard';
 import CreateTaskModal from '@/components/CreateTaskModal';
 
@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
   const [showCompleted, setShowCompleted] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -598,14 +599,95 @@ export default function DashboardPage() {
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
               gap: '12px' 
             }}>
-              {completedArchiveTasks.map(task => (
-                <TaskCard 
-                  key={task._id || task.id} 
-                  task={task} 
-                  onEdit={undefined}
-                  onDelete={handleDelete} 
-                />
-              ))}
+              {completedArchiveTasks.map(task => {
+                const taskId = task._id || task.id;
+                const isExpanded = expandedTaskId === taskId;
+                
+                return (
+                  <div 
+                    key={taskId}
+                    className={`task-card priority-${task.priority} done`}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div 
+                      onClick={() => setExpandedTaskId(isExpanded ? null : taskId)}
+                      style={{ userSelect: 'none' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '8px' }}>
+                        <h4 className="task-title">
+                          {task.title}
+                        </h4>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span className="status-badge done">DONE</span>
+                          <ChevronDown 
+                            size={16} 
+                            style={{ 
+                              color: '#6b7280',
+                              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                              transition: 'transform 0.25s ease'
+                            }} 
+                          />
+                        </div>
+                      </div>
+
+                      {/* Always show due date in compact view */}
+                      {task.dueDate && (
+                        <div className="task-meta" style={{ marginTop: '8px' }}>
+                          <span className="due-date">
+                            Due: {new Date(task.dueDate).toDateString()}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Expanded details */}
+                      {isExpanded && (
+                        <div style={{ 
+                          marginTop: '12px',
+                          paddingTop: '12px',
+                          borderTop: '1px solid #e5e7eb',
+                          animation: 'fadeIn 0.25s ease'
+                        }}>
+                          {task.description && (
+                            <p className="task-desc" style={{ 
+                              WebkitLineClamp: 'unset',
+                              display: 'block'
+                            }}>
+                              {task.description}
+                            </p>
+                          )}
+                          <div style={{ 
+                            fontSize: '11px', 
+                            color: '#9ca3af',
+                            marginTop: '8px'
+                          }}>
+                            Priority: <span style={{ 
+                              textTransform: 'capitalize',
+                              fontWeight: 600,
+                              color: task.priority === 'high' ? '#ef4444' : task.priority === 'medium' ? '#f59e0b' : '#10b981'
+                            }}>{task.priority}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Delete button - always visible, outside click area */}
+                    <div className="task-footer" style={{ marginTop: '12px' }}>
+                      <div style={{ flex: 1 }} />
+                      <div className="task-actions">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(taskId);
+                          }}
+                          className="btn delete"
+                        >
+                          🗑 Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

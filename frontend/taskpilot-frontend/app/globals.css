@@ -64,6 +64,17 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Four Column Dashboard Grid */
 .dashboard-grid {
   display: grid;
@@ -197,10 +208,10 @@ body {
   border-color: #e5e7eb;
 }
 
-/* Completed tasks in Today bucket - readable and respectful */
+/* Completed tasks in Today bucket - clear and celebratory */
 .task-card.done {
-  opacity: 0.9;
-  background: #f0fdf4;
+  opacity: 1;
+  background: #ffffff;
   border-left-color: #22c55e !important;
 }
 
@@ -208,17 +219,17 @@ body {
   text-decoration: line-through;
   text-decoration-thickness: 1.5px;
   text-decoration-color: #9ca3af;
-  color: #374151;
+  color: #111827;
   font-weight: 500;
 }
 
 .task-card.done .task-desc {
-  color: #6b7280;
+  color: #4b5563;
 }
 
 .task-card.done .status-badge.done {
-  background: rgba(34, 197, 94, 0.15);
-  color: #15803d;
+  background: #22c55e;
+  color: white;
   font-weight: 600;
 }
 
