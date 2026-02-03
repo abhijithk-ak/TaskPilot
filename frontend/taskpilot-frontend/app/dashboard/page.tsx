@@ -326,7 +326,7 @@ export default function DashboardPage() {
           border: '1px solid #e5e7eb',
           borderRadius: '10px',
           padding: '14px 20px',
-          marginBottom: '24px',
+          marginBottom: '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -383,6 +383,57 @@ export default function DashboardPage() {
                 </span>
               </>
             )}
+          </div>
+        </div>
+
+        {/* AI Productivity Insight */}
+        <div style={{
+          background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
+          border: '1px solid #bfdbfe',
+          borderRadius: '10px',
+          padding: '16px 20px',
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+            borderRadius: '8px',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '36px',
+            height: '36px'
+          }}>
+            <span style={{ fontSize: '20px' }}>🧠</span>
+          </div>
+          <div>
+            <div style={{ 
+              fontSize: '13px', 
+              fontWeight: 600, 
+              color: '#1e40af',
+              marginBottom: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              ✨ AI Productivity Insight
+            </div>
+            <p style={{ 
+              fontSize: '14px', 
+              color: '#374151', 
+              margin: 0,
+              lineHeight: '1.5'
+            }}>
+              {todayTasks.length > 0 
+                ? `You're most productive between 10 AM and 12 PM. Focus on "${todayTasks[0].title}" next.`
+                : activeTasksList.length > 0
+                ? `Great start! You're most productive between 10 AM and 12 PM. Consider scheduling "${activeTasksList[0].title}" for today.`
+                : 'You have a clean slate today! Add tasks to get AI-powered productivity insights.'
+              }
+            </p>
           </div>
         </div>
 

@@ -7,13 +7,25 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [emailError, setEmailError] = useState('');
+
+  const validateEmail = (email: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleLogin = async () => {
     if (!email) {
-      alert('Please enter email');
+      setEmailError('Please enter an email address');
       return;
     }
 
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
+    setEmailError('');
     setIsLoggingIn(true);
     
     // Simulate slight delay for UX
@@ -65,33 +77,79 @@ export default function LoginPage() {
           </h1>
         </div>
         <p style={{ 
-          color: '#9ca3af', 
+          color: '#6b7280', 
           margin: 0, 
-          marginBottom: '28px',
-          fontSize: '13px',
-          paddingLeft: '60px'
+          marginBottom: '20px',
+          fontSize: '14px',
+          paddingLeft: '60px',
+          fontWeight: 500
         }}>
-          Smart task management powered by AI
+          Plan smarter. Let AI prioritize your tasks.
         </p>
+
+        {/* Feature Bullets */}
+        <div style={{
+          marginBottom: '24px',
+          paddingLeft: '60px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6b7280' }}>
+            <span style={{ color: '#10b981', fontSize: '16px' }}>✓</span>
+            <span>AI-assisted task categorization</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6b7280' }}>
+            <span style={{ color: '#10b981', fontSize: '16px' }}>✓</span>
+            <span>Smart daily focus</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6b7280' }}>
+            <span style={{ color: '#10b981', fontSize: '16px' }}>✓</span>
+            <span>Clean productivity dashboard</span>
+          </div>
+        </div>
 
         <input
           type="email"
-          placeholder="Enter your email"
+          placeholder="name@university.edu"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setEmailError('');
+          }}
           onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
           disabled={isLoggingIn}
           style={{
             width: '100%',
             padding: '12px 16px',
             fontSize: '15px',
-            border: '1px solid #e5e7eb',
+            border: emailError ? '1px solid #ef4444' : '1px solid #e5e7eb',
             borderRadius: '8px',
-            marginBottom: '16px',
+            marginBottom: '4px',
             outline: 'none',
-            transition: 'border-color 0.2s ease'
+            transition: 'all 0.2s ease',
+            backgroundColor: isLoggingIn ? '#f9fafb' : 'white'
+          }}
+          onFocus={(e) => {
+            if (!emailError) e.currentTarget.style.borderColor = '#3b82f6';
+          }}
+          onBlur={(e) => {
+            if (!emailError) e.currentTarget.style.borderColor = '#e5e7eb';
           }}
         />
+
+        {emailError && (
+          <p style={{
+            color: '#ef4444',
+            fontSize: '12px',
+            marginBottom: '12px',
+            marginTop: '0'
+          }}>
+            {emailError}
+          </p>
+        )}
+
+        {!emailError && <div style={{ marginBottom: '16px' }} />}
 
         <button 
           onClick={handleLogin}

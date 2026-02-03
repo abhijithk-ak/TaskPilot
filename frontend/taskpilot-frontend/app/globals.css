@@ -122,8 +122,8 @@ body {
 
 /* Semantic Column Colors - Soft Tints */
 .today-column .column-header {
-  background: #E8F2FF;
-  border-bottom-color: #3b82f6;
+  background: #EFF6FF;
+  border-bottom-color: #93c5fd;
 }
 
 .today-column .task-count {
@@ -132,8 +132,8 @@ body {
 }
 
 .tomorrow-column .column-header {
-  background: #FFF4D6;
-  border-bottom-color: #f59e0b;
+  background: #FFFBEB;
+  border-bottom-color: #fcd34d;
 }
 
 .tomorrow-column .task-count {
@@ -142,8 +142,8 @@ body {
 }
 
 .upcoming-column .column-header {
-  background: #F3E8FF;
-  border-bottom-color: #a855f7;
+  background: #FAF5FF;
+  border-bottom-color: #c084fc;
 }
 
 .upcoming-column .task-count {
@@ -152,8 +152,8 @@ body {
 }
 
 .overdue-column .column-header {
-  background: #FFE5E5;
-  border-bottom-color: #ef4444;
+  background: #FEF2F2;
+  border-bottom-color: #fca5a5;
 }
 
 .overdue-column .task-count {
@@ -162,7 +162,7 @@ body {
 }
 
 .column-content {
-  padding: 16px;
+  padding: 18px;
   flex: 1;
   overflow-y: auto;
 }
@@ -182,17 +182,19 @@ body {
 .task-card {
   background: #FFFFFF;
   border-radius: 10px;
-  padding: 14px;
+  padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  border-left: 4px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #f3f4f6;
+  border-left: 3px solid #e5e7eb;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
 .task-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-color: #e5e7eb;
 }
 
 .task-card.done {
@@ -225,8 +227,8 @@ body {
 .task-desc {
   font-size: 13px;
   color: #4B5563;
-  margin: 8px 0 6px 0;
-  line-height: 1.5;
+  margin: 10px 0 8px 0;
+  line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -243,7 +245,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
 }
 
 .task-meta {
@@ -318,17 +322,17 @@ body {
   transform: scale(1.02);
 }
 
-/* Priority colors - Thin accents */
+/* Priority colors - Subtle thin accents */
 .priority-high {
-  border-left-color: #ef4444;
+  border-left-color: #f87171;
 }
 
 .priority-medium {
-  border-left-color: #f59e0b;
+  border-left-color: #fbbf24;
 }
 
 .priority-low {
-  border-left-color: #10b981;
+  border-left-color: #34d399;
 }
 
 /* Status badges - Subtle */
