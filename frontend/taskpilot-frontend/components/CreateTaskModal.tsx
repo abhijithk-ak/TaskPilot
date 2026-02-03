@@ -53,26 +53,30 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
   const [aiConfidence, setAiConfidence] = useState<number | null>(null);
   const [aiReason, setAiReason] = useState<string>("");
 
-  // Pre-fill form when editing
+  // Reset form to pristine state when modal opens or editingTask changes
   useEffect(() => {
-    if (editingTask) {
-      setTitle(editingTask.title || "");
-      setDescription(editingTask.description || "");
-      setPriority(editingTask.priority || "medium");
-      setStatus(editingTask.status || "todo");
-      setDueDate(editingTask.dueDate ? editingTask.dueDate.split('T')[0] : "");
-      setAiConfidence(null);
-      setAiReason("");
-    } else {
-      setTitle("");
-      setDescription("");
-      setPriority("medium");
-      setStatus("todo");
-      setDueDate("");
-      setAiConfidence(null);
-      setAiReason("");
+    if (isOpen) {
+      if (editingTask) {
+        // Editing existing task - pre-fill but clear AI state
+        setTitle(editingTask.title || "");
+        setDescription(editingTask.description || "");
+        setPriority(editingTask.priority || "medium");
+        setStatus(editingTask.status || "todo");
+        setDueDate(editingTask.dueDate ? editingTask.dueDate.split('T')[0] : "");
+        setAiConfidence(null);
+        setAiReason("");
+      } else {
+        // Creating new task - completely fresh state
+        setTitle("");
+        setDescription("");
+        setPriority("medium");
+        setStatus("todo");
+        setDueDate("");
+        setAiConfidence(null);
+        setAiReason("");
+      }
     }
-  }, [editingTask]);
+  }, [isOpen, editingTask]);
 
   if (!isOpen) return null;
 
@@ -139,12 +143,14 @@ export default function CreateTaskModal({ isOpen, onClose, onTaskCreated, editin
 
       onTaskCreated(savedTask);
       
-      // Reset form
+      // Reset form to pristine state
       setTitle("");
       setDescription("");
       setPriority("medium");
       setStatus("todo");
       setDueDate("");
+      setAiConfidence(null);
+      setAiReason("");
       onClose();
     } catch (err: any) {
       const errorMsg = err.message || 'Error saving task. Make sure backend is running.';

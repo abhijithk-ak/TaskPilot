@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LayoutDashboard, LogOut, Pin, Calendar, AlertTriangle, Plus, ChevronDown } from 'lucide-react';
 import TaskCard from '@/components/TaskCard';
 import CreateTaskModal from '@/components/CreateTaskModal';
@@ -11,8 +11,12 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
-  const [showCompleted, setShowCompleted] = useState(false);
+  const [isCompletedOpen, setIsCompletedOpen] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const completedRef = useRef<HTMLDivElement>(null);
+  const todayRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef(false);
+  const scrollTriggerRef = useRef(0);
 
   useEffect(() => {
     setMounted(true);
@@ -312,7 +316,16 @@ export default function DashboardPage() {
       {/* Main Content - with left margin for fixed sidebar */}
       <div className="page-background" style={{ flex: 1, marginLeft: '240px', padding: '30px' }}>
         {/* Header with Date */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+        <div style={{ 
+          background: 'linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%)',
+          borderRadius: '12px',
+          padding: '20px 24px',
+          marginBottom: '16px',
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          border: '1px solid #e5e7eb'
+        }}>
           <div>
             <h1 style={{
               fontSize: '26px',
@@ -360,12 +373,72 @@ export default function DashboardPage() {
             </span>
             <span style={{ color: '#d1d5db' }}>·</span>
             <span 
-              onClick={() => setShowCompleted(prev => !prev)}
-              style={{ cursor: 'pointer', transition: 'opacity 0.2s' }}
-              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.7'}
-              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+              onClick={() => {
+                const archiveCount = completedArchiveTasks.length;
+                const todayCompletedCount = completedTodayTasks.length;
+
+                // Case 1: Archive has items → scroll to archive
+                if (archiveCount > 0) {
+                  if (isCompletedOpen) {
+                    // Already open → collapse
+                    setIsCompletedOpen(false);
+                    hasScrolledRef.current = false;
+                    return;
+                  }
+
+                  // Open + scroll to archive
+                  setIsCompletedOpen(true);
+                  scrollTriggerRef.current += 1;
+
+                  requestAnimationFrame(() => {
+                    if (!hasScrolledRef.current) {
+                      completedRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                      });
+                      hasScrolledRef.current = true;
+                    }
+                  });
+                }
+                // Case 2: Archive empty, but today has completed tasks → scroll to Today
+                else if (todayCompletedCount > 0) {
+                  requestAnimationFrame(() => {
+                    todayRef.current?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  });
+                }
+                // Case 3: No completed tasks at all
+                else {
+                  alert('✅ No completed tasks yet. Complete a task to see it here!');
+                }
+              }}
+              style={{ 
+                cursor: 'pointer', 
+                transition: 'all 0.2s',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0fdf4';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
-              <strong style={{ color: '#10b981', fontWeight: 600 }}>{completedTasksCount}</strong> completed {showCompleted ? '▼' : '▶'}
+              <strong style={{ color: '#10b981', fontWeight: 600 }}>{completedTasksCount}</strong> completed
+              <ChevronDown 
+                size={14} 
+                style={{ 
+                  color: '#10b981',
+                  transition: 'transform 0.2s',
+                  transform: isCompletedOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                }} 
+              />
             </span>
             {overdueCount > 0 && (
               <>
@@ -386,83 +459,234 @@ export default function DashboardPage() {
               overflow: 'hidden'
             }}>
               <div style={{
-                width: totalTodayCount > 0 ? `${todayCompletionPercentage}%` : '100%',
+                width: totalTodayCount > 0 ? `${todayCompletionPercentage}%` : '0%',
                 height: '100%',
-                background: totalTodayCount > 0 
-                  ? 'linear-gradient(90deg, #10b981, #3b82f6)'
-                  : 'linear-gradient(90deg, #d1d5db, #e5e7eb)',
+                background: 'linear-gradient(90deg, #10b981, #3b82f6)',
                 borderRadius: '3px',
                 transition: 'width 0.3s ease'
               }} />
             </div>
-            <span style={{ fontSize: '13px', color: '#6b7280', fontWeight: 500, whiteSpace: 'nowrap' }}>
+            <span className="progress-text" style={{ fontSize: '13px', color: '#6b7280', fontWeight: 500, whiteSpace: 'nowrap' }}>
               {totalTodayCount > 0 
-                ? `${todayCompletionPercentage}% done today`
+                ? todayCompletionPercentage === 0
+                  ? '⏳ No tasks completed yet — start with your first task'
+                  : `${todayCompletionPercentage}% done today`
                 : 'No tasks scheduled for today'
               }
             </span>
           </div>
         </div>
 
-        {/* AI Productivity Insight */}
-        <div style={{
-          background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
-          border: '1px solid #bfdbfe',
-          borderRadius: '10px',
-          padding: '16px 20px',
-          marginBottom: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-            borderRadius: '8px',
-            padding: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: '36px',
-            height: '36px'
-          }}>
-            <span style={{ fontSize: '20px' }}>🧠</span>
-          </div>
-          <div>
-            <div style={{ 
-              fontSize: '13px', 
-              fontWeight: 600, 
-              color: '#1e40af',
-              marginBottom: '4px',
+        {/* AI Productivity Insight - Priority-based logic */}
+        {(() => {
+          // Priority 1: Overdue tasks (highest priority)
+          if (overdueCount > 0) {
+            return (
+              <div className="ai-insight-card" style={{
+                background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                border: '1px solid #fecaca',
+                borderRadius: '10px',
+                padding: '16px 20px',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '36px',
+                  height: '36px'
+                }}>
+                  <span style={{ fontSize: '20px' }}>⚠️</span>
+                </div>
+                <div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    fontWeight: 600, 
+                    color: '#991b1b',
+                    marginBottom: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    ⚡ AI Productivity Alert
+                  </div>
+                  <p style={{ 
+                    fontSize: '14px', 
+                    color: '#7f1d1d', 
+                    margin: 0,
+                    lineHeight: '1.5'
+                  }}>
+                    You have {overdueCount} overdue task{overdueCount > 1 ? 's' : ''}. Consider finishing {overdueCount === 1 ? 'it' : 'them'} today to stay on track.
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          // Priority 2: Active tasks today
+          if (activeTodayTasks.length > 0) {
+            return (
+              <div className="ai-insight-card" style={{
+                background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)',
+                border: '1px solid #bfdbfe',
+                borderRadius: '10px',
+                padding: '16px 20px',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '36px',
+                  height: '36px'
+                }}>
+                  <span style={{ fontSize: '20px' }}>🎯</span>
+                </div>
+                <div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    fontWeight: 600, 
+                    color: '#1e40af',
+                    marginBottom: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    ✨ AI Productivity Insight
+                  </div>
+                  <p style={{ 
+                    fontSize: '14px', 
+                    color: '#374151', 
+                    margin: 0,
+                    lineHeight: '1.5'
+                  }}>
+                    You're most productive between 10 AM and 12 PM. Focus on "{activeTodayTasks[0].title}" next.
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          // Priority 3: Today completed (and no overdue)
+          if (totalTodayCount > 0 && todayCompletionPercentage === 100) {
+            return (
+              <div className="ai-insight-card" style={{
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                border: '1px solid #bbf7d0',
+                borderRadius: '10px',
+                padding: '16px 20px',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <div style={{
+                  background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                  borderRadius: '8px',
+                  padding: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '36px',
+                  height: '36px'
+                }}>
+                  <span style={{ fontSize: '20px' }}>🎉</span>
+                </div>
+                <div>
+                  <div style={{ 
+                    fontSize: '13px', 
+                    fontWeight: 600, 
+                    color: '#166534',
+                    marginBottom: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    ✨ AI Productivity Insight
+                  </div>
+                  <p style={{ 
+                    fontSize: '14px', 
+                    color: '#14532d', 
+                    margin: 0,
+                    lineHeight: '1.5'
+                  }}>
+                    Great work! All today's tasks are completed. Consider planning for tomorrow.
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          // Priority 4: No tasks at all (empty state)
+          return (
+            <div className="ai-insight-card" style={{
+              background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
+              border: '1px solid #e5e7eb',
+              borderRadius: '10px',
+              padding: '16px 20px',
+              marginBottom: '24px',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px'
+              gap: '12px'
             }}>
-              ✨ AI Productivity Insight
+              <div style={{
+                background: 'linear-gradient(135deg, #6b7280, #4b5563)',
+                borderRadius: '8px',
+                padding: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: '36px',
+                height: '36px'
+              }}>
+                <span style={{ fontSize: '20px' }}>💡</span>
+              </div>
+              <div>
+                <div style={{ 
+                  fontSize: '13px', 
+                  fontWeight: 600, 
+                  color: '#374151',
+                  marginBottom: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  ✨ AI Productivity Insight
+                </div>
+                <p style={{ 
+                  fontSize: '14px', 
+                  color: '#4b5563', 
+                  margin: 0,
+                  lineHeight: '1.5'
+                }}>
+                  You have a clean slate! Add tasks to get AI-powered productivity insights.
+                </p>
+              </div>
             </div>
-            <p style={{ 
-              fontSize: '14px', 
-              color: '#374151', 
-              margin: 0,
-              lineHeight: '1.5'
-            }}>
-              {activeTodayTasks.length > 0 
-                ? `You're most productive between 10 AM and 12 PM. Focus on "${activeTodayTasks[0].title}" next.`
-                : todayTasks.length > 0
-                ? `Great work! All today's tasks are completed. Consider planning for tomorrow.`
-                : tasks.filter(t => t.status !== 'done').length > 0
-                ? `You're most productive between 10 AM and 12 PM. Consider scheduling tasks for today.`
-                : 'You have a clean slate! Add tasks to get AI-powered productivity insights.'
-              }
-            </p>
-          </div>
-        </div>
+          );
+        })()}
 
         {/* Four Column Layout - Reordered: Today → Tomorrow → Overdue → Upcoming */}
         <div className="dashboard-grid" style={{ 
           gridTemplateColumns: `repeat(${2 + (overdueTasks.length > 0 ? 1 : 0) + (upcomingTasks.length > 0 ? 1 : 0)}, 1fr)` 
         }}>
-          {/* Today Column - Always Show */}
-          <div className="task-column today-column">
+          {/* Today Column - Always Show - Add success pulse when 100% complete */}
+          <div 
+            ref={todayRef}
+            className={`task-column today-column ${totalTodayCount > 0 && todayCompletionPercentage === 100 && overdueCount === 0 ? 'success-pulse' : ''}`}
+          >
             <div className="column-header">
               <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Pin size={18} /> Today</h2>
               <span className="task-count">{todayTasks.length}</span>
@@ -591,8 +815,13 @@ export default function DashboardPage() {
         )}
 
         {/* ✅ Rule 3: Completed Archive Section (All completed tasks NOT from today) */}
-        {showCompleted && completedArchiveTasks.length > 0 && (
-          <div className="completed-section" style={{ marginTop: '30px' }}>
+        {isCompletedOpen && completedArchiveTasks.length > 0 && (
+          <div 
+            key={`completed-${scrollTriggerRef.current}`}
+            ref={completedRef}
+            className="completed-section completed-highlight"
+            style={{ marginTop: '30px' }}
+          >
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -636,7 +865,7 @@ export default function DashboardPage() {
                 return (
                   <div 
                     key={taskId}
-                    className={`task-card priority-${task.priority} done`}
+                    className={`task-card priority-${task.priority} done ${isExpanded ? 'expanded' : ''}`}
                     style={{ 
                       cursor: 'pointer',
                       transition: 'all 0.2s ease-out'
@@ -654,10 +883,9 @@ export default function DashboardPage() {
                           <span className="status-badge done">DONE</span>
                           <ChevronDown 
                             size={16} 
+                            className="chevron-icon"
                             style={{ 
-                              color: '#6b7280',
-                              transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                              transition: 'transform 0.25s ease'
+                              color: '#6b7280'
                             }} 
                           />
                         </div>
