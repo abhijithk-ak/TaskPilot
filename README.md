@@ -89,8 +89,23 @@ TaskPilot/
 │   ├── classifier.py          # NLP task classifier
 │   └── requirements.txt
 │
+├── DESIGN_IMPROVEMENTS.md      # UX design decisions & rationale
+├── TASK_LIFECYCLE_LOGIC.md     # Task bucket logic & rules
+├── DEVELOPMENT_STATUS.md       # Project status tracker
+├── start-services.bat          # Windows helper to start all services
+├── test_services.py            # Service connectivity tester
 └── README.md                   # You are here
 ```
+
+### 📄 Helper Documentation Files
+
+**Purpose:** These files document the thinking process and design decisions—valuable for evaluators and contributors.
+
+- **`DESIGN_IMPROVEMENTS.md`** - Chronicles UX improvements, animation decisions, and visual polish reasoning
+- **`TASK_LIFECYCLE_LOGIC.md`** - Explains task bucket rules (Today/Tomorrow/Overdue/Completed Archive)
+- **`DEVELOPMENT_STATUS.md`** - Tracks feature completion status and roadmap progress
+- **`start-services.bat`** - Windows batch script to launch all three services simultaneously *(Windows only)*
+- **`test_services.py`** - Python script to verify backend, frontend, and AI service connectivity
 
 ---
 
