@@ -1,356 +1,433 @@
-# TaskPilot
+# TaskPilot ✨
 
-A smart task management system with AI-powered task classification featuring a modern dashboard and user-based task isolation.
+> **AI-Powered Task Management System** with intelligent prioritization, smart navigation, and production-grade UX
 
-## 🔐 Security Notice
+A modern, full-stack task management application featuring AI-powered task classification, priority-based insights, and a polished dashboard interface that adapts to your workflow.
 
-**All credentials have been removed and replaced with placeholders.**  
-Environment variables are managed via `.env` files which are **not committed** to version control.
+---
 
-- MongoDB credentials have been rotated
-- `.env.example` files provided for reference
-- Git history has been cleaned of sensitive data
+## 🎯 Project Highlights
 
-## Project Structure
+### ✅ **Production-Ready Features**
+- 🤖 **AI Task Classification** - Auto-categorize tasks with confidence scoring
+- 📊 **Smart Dashboard** - Priority-based AI insights that adapt to task state
+- 🎨 **Four-Column Layout** - Today → Tomorrow → Overdue → Upcoming
+- ⚡ **Intelligent Navigation** - Context-aware scrolling and state management
+- 📱 **Responsive Design** - Mobile-optimized with smooth animations
+- 👤 **User Isolation** - Email-based task ownership and filtering
+- 🔄 **Real-time Updates** - Instant task synchronization across all views
+
+### 🧠 **UX Principles Applied**
+- **Priority-based AI insights** (Overdue > Active > Completed > Empty)
+- **State-aware navigation** (no surprise scrolling, predictable toggles)
+- **Smooth animations** (requestAnimationFrame, pure CSS, zero blinks)
+- **Modal state management** (pristine state on every open)
+- **Visual feedback** (green pulse highlights, chevron rotation, hover states)
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐      HTTP      ┌──────────────────┐      HTTP      ┌──────────────────┐
+│   Frontend      │────────────────>│   Backend        │────────────────>│   AI Service     │
+│   (Next.js)     │<────────────────│   (Express)      │<────────────────│   (Flask)        │
+│   Port 3000     │   REST API      │   Port 5000      │   Classify API  │   Port 8000      │
+│                 │                 │                  │                 │                  │
+│ • Dashboard     │                 │ • Task CRUD      │                 │ • NLP Classifier │
+│ • Task Cards    │                 │ • User Filter    │                 │ • Confidence     │
+│ • AI Insights   │                 │ • AI Integration │                 │ • Explainability │
+└─────────────────┘                 └────────┬─────────┘                 └──────────────────┘
+                                             │
+                                             │ MongoDB Driver
+                                             ▼
+                                    ┌──────────────────┐
+                                    │   MongoDB Atlas  │
+                                    │   (Cloud DB)     │
+                                    └──────────────────┘
+```
+
+---
+
+## 📂 Project Structure
 
 ```
 TaskPilot/
-├── backend/              # Node.js + Express API
+├── backend/                    # Node.js + Express API
 │   ├── src/
-│   │   ├── models/      # MongoDB schemas
-│   │   ├── controllers/ # Business logic
-│   │   └── routes/      # API routes
-├── frontend/             # Next.js frontend
+│   │   ├── models/            # MongoDB schemas (Task model)
+│   │   ├── controllers/       # Business logic
+│   │   └── routes/            # API routes
+│   ├── .env.example           # Environment template
+│   └── package.json
+│
+├── frontend/                   # Next.js 16.1.6 (Turbopack)
 │   └── taskpilot-frontend/
-│       ├── app/         # Pages and routes
-│       └── components/  # Reusable components
-├── ai-service/           # Python Flask AI service
-└── README.md
+│       ├── app/
+│       │   ├── dashboard/     # Main dashboard page
+│       │   ├── login/         # Login page
+│       │   └── globals.css    # Global styles + animations
+│       ├── components/
+│       │   ├── TaskCard.tsx   # Task card component
+│       │   └── CreateTaskModal.tsx  # Modal with AI integration
+│       └── package.json
+│
+├── ai-service/                 # Python Flask AI Service
+│   ├── app.py                 # Flask server
+│   ├── classifier.py          # NLP task classifier
+│   └── requirements.txt
+│
+└── README.md                   # You are here
 ```
 
-## Features
+---
 
-### ✅ Completed Features
-
-**Frontend (Next.js 16.1.6 with Turbopack)**
-- 🎨 Modern three-column dashboard layout (Today, Tomorrow, Overdue)
-- 📊 Analytics dashboard with real-time task metrics
-- 🤖 AI-powered auto-categorization with one-click classification
-- ✏️ Full CRUD operations (Create, Read, Update, Delete)
-- 👤 User-based task isolation with email-based authentication
-- 🎯 Date-based task grouping and filtering
-- 💫 Smooth micro-animations and hover effects
-- 📱 Responsive design with mobile support
-- 🎨 Semantic color coding (Blue=Today, Yellow=Tomorrow, Red=Overdue)
-- ⚡ Loading states and error handling
-
-**Backend (Node.js + Express)**
-- RESTful API for task management
-- MongoDB integration with Mongoose
-- User-based task filtering by email
-- AI service integration for task classification
-- CORS enabled for frontend communication
-- Comprehensive error handling and validation
-- Health check endpoints
-
-**AI Service (Python + Flask)**
-- Keyword-based task classification
-- Priority prediction (high/medium/low)
-- Status prediction (todo/progress/done)
-- Confidence scoring
-- RESTful API with CORS support
-
-**Database (MongoDB Atlas)**
-- Cloud-hosted database
-- User email-based task ownership
-- Automatic timestamps
-- Data validation and schema enforcement
-
-## Setup Instructions
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- Python 3.12+
-- MongoDB Atlas account (or local MongoDB)
-- Git
+- **Node.js** v18+ ([Download](https://nodejs.org/))
+- **Python** 3.12+ ([Download](https://www.python.org/))
+- **MongoDB Atlas** account ([Sign up free](https://www.mongodb.com/cloud/atlas))
+- **Git** ([Download](https://git-scm.com/))
 
-### 1. Backend Setup
+### 1️⃣ Clone Repository
+```bash
+git clone https://github.com/abhijithk-ak/TaskPilot.git
+cd TaskPilot
+```
 
-Navigate to the backend directory:
+### 2️⃣ Backend Setup
 ```bash
 cd backend
-```
-
-Install dependencies:
-```bash
 npm install
-```
 
-Create `.env` file from template:
-```bash
-# Copy the example file
+# Create .env file from template
 cp .env.example .env
 
-# Edit .env and add your MongoDB credentials
-# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority
-```
+# Edit .env and add your MongoDB credentials:
+# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/taskpilot?retryWrites=true&w=majority
 
-**⚠️ Important:** 
-- Replace `<username>`, `<password>`, `<cluster-url>`, and `<database>` with your actual MongoDB Atlas credentials
-- Never commit the `.env` file to version control
-- The `.env` file is already in `.gitignore`
-
-Start the development server:
-```bash
+# Start backend server
 npm run dev
 ```
+✅ Backend running on **http://localhost:5000**
 
-Backend will run on `http://localhost:5000`
-
-### 2. AI Service Setup
-
-Navigate to the ai-service directory:
+### 3️⃣ AI Service Setup
 ```bash
-cd ai-service
-```
+cd ../ai-service
 
-Create and activate a virtual environment:
-```bash
+# Create virtual environment
 python -m venv venv
 
-# On Windows:
+# Activate (Windows)
 .\venv\Scripts\Activate.ps1
 
-### 3. Frontend Setup
+# Activate (Mac/Linux)
+source venv/bin/activate
 
-Navigate to the frontend directory:
-```bash
-cd frontend/taskpilot-frontend
-```
+# Install dependencies
+pip install -r requirements.txt
 
-Install dependencies:
-```bash
-npm install
-```
-
-Start the development server:
-```bash
-npm run dev
-```
-
-Frontend will run on `http://localhost:3000`
-
-### Quick Start (All Services)
-
-For convenience, use the batch script (Windows):
-```bash
-start-services.bat
-```
-
-Or start manually in separate terminals:
-```bash
-# Terminal 1 - Backend
-cd backend && npm run dev
-
-# Terminal 2 - AI Service
-cd ai-service && python app.py
-
-# Terminal 3 - Frontend
-cd frontend/taskpilot-frontend && npm run dev
-```
-
-## 🤖 AI Task Classifier
-
-A lightweight NLP-based classifier that predicts task priority and status using **keyword heuristics with confidence scoring**.
-
-**How it works:**
-- Analyzes task descriptions for priority keywords (urgent, ASAP, important, etc.)
-- Returns priority (high/medium/low) and status (todo/in-progress/done)
-- Provides confidence score (0-1) based on keyword match strength
-- Explains reasoning with detected keywords
-
-**Key Features:**
-- ✅ No external ML APIs required
-- ✅ Fast inference (<100ms)
-- ✅ Explainable predictions with confidence metrics
-- ✅ Keyword-based heuristics optimized for task management
-
-This approach demonstrates **practical ML integration** without over-engineering, making it ideal for hackathons and interview projects.
-
-## API Endpoints**AI Classification**: Enter description and click "🤖 Auto-Categorize" to auto-fill priority/status
-5. **Edit Task**: Click "Edit" button on any task card
-6. **Delete Task**: Click "Delete" button with confirmation
-7. **Analytics**: View real-time metrics at the top of dashboard
-1. Navigate to the frontend directory:
-```bash
-cd frontend/taskpilot-frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-The frontend will run on `http://localhost:3000`
-
-### Running All Services
-
-Open three separate terminals and run:
-
-**Terminal 1 - Backend:**
-```bash
-cd backend
-npm run dev
-```
-
-**Terminal 2 - AI Service:**
-```bash
-cd ai-service
+# Start AI service
 python app.py
 ```
+✅ AI Service running on **http://localhost:8000**
 
-**Terminal 3 - Frontend:**
+### 4️⃣ Frontend Setup
 ```bash
-cd frontend/taskpilot-frontend
+cd ../frontend/taskpilot-frontend
+npm install
+
+# Start development server
 npm run dev
 ```
+✅ Frontend running on **http://localhost:3000**
 
-## API Endpoints
-
-### Backend (Port 5000)
-- `Key Features Explained
-
-### Three-Column Dashboard
-Tasks are automatically organized into three visual columns:
-- **Today** (Blue): Tasks due today
-- **Tomorrow** (Yellow): Tasks due tomorrow  
-- **Overdue** (Red): Past due tasks requiring attention
-
-### User Isolation
-Each user's tasks are completely isolated:
-- Tasks are stored with `userEmail` field
-- Backend filters queries by user email
-- No user can see another user's tasks
-
-### AI Classification
-The AI service analyzes task descriptions for keywords:
-- "urgent", "asap", "important" → High priority
-- "later", "eventually", "someday" → Low priority
-- "done", "finished", "completed" → Done status
-- Returns confidence score with prediction
-
-## Development Roadmap
-
-### ✅ Phase 1 - Complete
-- Backend API with MongoDB
-- AI classification service
-- Frontend UI with three-column layout
-- Full CRUD operations
-- User-based task isolation
-- Analytics dashboard
-
-### 🚧 Phase 2 - Future Enhancements
-- Real authentication (JWT)
-- Task sharing and collaboration
-- Advanced AI models (ML-based)
-- Real-time updates (WebSocket)
-- Task notifications
-- Dark mode
-- Mobile app
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Contact
-
-Repository: [https://github.com/abhijithk-ak/TaskPilot](https://github.com/abhijithk-ak/TaskPilot)
-sk management
-- MongoDB integration with Mongoose
-- AI-powered task classification
-- CORS enabled for frontend integration
-### Test AI Classification:
-```bash
-curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d "{\"description\": \"Finish this urgently\"}"
+### 🎉 Access Application
+Open your browser and navigate to:
+```
+http://localhost:3000
 ```
 
-### Create a Task:
-```bash
-curl -X POST http://localhost:5000/tasks -H "Content-Type: application/json" -d "{\"title\": \"Test Task\", \"description\": \"This is urgent\", \"userEmail\": \"test@example.com\", \"priority\": \"high\", \"status\": \"todo\", \"dueDate\": \"2026-02-03\"}"
+---
+
+## 🎨 Features Walkthrough
+
+### 📊 **Dashboard Layout**
+
+**Four Dynamic Columns:**
+- 🔵 **Today** - Active + completed tasks due today (blue gradient)
+- 🟡 **Tomorrow** - Tasks due tomorrow (yellow gradient)
+- 🔴 **Overdue** - Past due tasks requiring attention (red gradient)
+- 🟣 **Upcoming** - Future tasks (purple gradient)
+
+**Adaptive Layout:**
+- Columns appear/disappear based on task availability
+- Grid auto-adjusts (2-4 columns based on content)
+- Mobile-responsive with single-column fallback
+
+### 🤖 **AI Productivity Insights**
+
+**Priority-Based Intelligence:**
+```
+1️⃣ Overdue tasks exist     → ⚠️ Warning tone (red)
+                              "You have 3 overdue tasks..."
+
+2️⃣ Active tasks today      → 🎯 Focus tone (blue)
+                              "Peak hours: 10-12 PM. Focus on..."
+
+3️⃣ Today complete          → 🎉 Success tone (green)
+                              "Great work! All tasks completed..."
+
+4️⃣ No tasks                → 💡 Neutral tone (gray)
+                              "Clean slate! Add tasks..."
 ```
 
-### Get User's Tasks:
+### 🎯 **Smart Completed Navigation**
+
+**Context-Aware Scrolling:**
+- Archive has items → Scroll to archive + expand + highlight
+- Archive empty + today completed → Scroll to Today section
+- No completed tasks → Show helpful message
+- Toggle behavior → Collapse if already open (no surprise scrolling)
+
+### ✨ **AI Task Categorization**
+
+1. Enter task description
+2. Click **"🤖 Auto-Categorize"**
+3. AI analyzes keywords and context
+4. Auto-fills priority (High/Medium/Low) and status
+5. Shows confidence score with explanation
+
+**Example:**
+```
+Description: "Finish urgent presentation for tomorrow's meeting"
+
+AI Result:
+✅ Priority: High
+✅ Status: Todo
+✅ Confidence: 85%
+✅ Reason: "Detected keywords: urgent, tomorrow, meeting"
+```
+
+### 🎨 **Visual Polish**
+
+- **Header gradient** - Subtle blue tint (#f8fbff → #f4f7fb)
+- **Progress bar** - Always visible with contextual messages
+- **Hover states** - Green pill backgrounds on interactive elements
+- **Animations** - Smooth scrolling, chevron rotation, pulse highlights
+- **Success pulse** - Green glow on Today column when 100% complete
+
+### 📋 **Completed Archive**
+
+- Shows only completed tasks from **previous days**
+- Today's completed tasks stay in Today column
+- Click to expand individual task details
+- Accordion behavior (one card open at a time)
+- Chevron rotation indicates expand/collapse state
+
+---
+
+## 🛠️ Technologies
+
+### Frontend Stack
+- **Next.js 16.1.6** (Turbopack) - React framework with server-side rendering
+- **React 19** - Component library
+- **TypeScript** - Type safety
+- **Lucide React** - Icon library
+- **CSS Modules** - Scoped styling with animations
+
+### Backend Stack
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database (Atlas cloud)
+- **Mongoose** - ODM (Object Document Mapper)
+- **Axios** - HTTP client for AI service integration
+
+### AI Service Stack
+- **Python 3.12** - Programming language
+- **Flask** - Lightweight web framework
+- **Flask-CORS** - Cross-origin resource sharing
+- **NLP Classifier** - Keyword-based task categorization
+
+---
+
+## 📡 API Reference
+
+### Backend Endpoints (Port 5000)
+
+#### **Tasks**
+```http
+GET    /tasks?userEmail={email}     # Get all user tasks
+POST   /tasks                       # Create new task
+PUT    /tasks/:id                   # Update task
+DELETE /tasks/:id                   # Delete task
+POST   /tasks/classify              # AI classification
+```
+
+#### **Health Check**
+```http
+GET    /health                      # Server status
+```
+
+### AI Service Endpoints (Port 8000)
+
+#### **Prediction**
+```http
+POST   /predict
+Content-Type: application/json
+
+{
+  "description": "Finish urgent presentation for tomorrow"
+}
+
+Response:
+{
+  "priority": "high",
+  "status": "todo",
+  "confidence": 0.85,
+  "reason": "Detected keywords: urgent, tomorrow, finish"
+}
+```
+
+---
+
+## 🧪 Testing
+
+### Manual Testing
+
+**Test AI Classification:**
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"description": "Urgent meeting tomorrow"}'
+```
+
+**Create Task:**
+```bash
+curl -X POST http://localhost:5000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Test Task",
+    "description": "This is urgent",
+    "userEmail": "test@example.com",
+    "priority": "high",
+    "status": "todo",
+    "dueDate": "2026-02-03"
+  }'
+```
+
+**Get User Tasks:**
 ```bash
 curl "http://localhost:5000/tasks?userEmail=test@example.com"
 ```
 
-## Technologies Used
+---
 
-- **Frontend**: Next.js 16.1.6 (Turbopack), React, TypeScript
-- **Backend**: Node.js, Express.js, MongoDB, Mongoose, Axios
-- **AI Service**: Python 3.12, Flask, Flask-CORS
-- **Database**: MongoDB Atlas (Cloud)
-- **Version Control**: Git, GitHub
+## 🔐 Security
 
-## Architecture
-
-```
-┌─────────────┐      HTTP      ┌─────────────┐      HTTP      ┌─────────────┐
-│   Frontend  │────────────────>│   Backend   │────────────────>│ AI Service  │
-│  (Next.js)  │<────────────────│  (Express)  │<────────────────│   (Flask)   │
-│  Port 3000  │                 │  Port 5000  │                 │  Port 8000  │
-└─────────────┘                 └──────┬──────┘                 └─────────────┘
-                                       │
-                                       │ MongoDB Driver
-                                       ▼
-                                ┌─────────────┐
-                                │  MongoDB    │
-                                │   Atlas     │
-                                └─────────────┘
-```
-
-## Key Features Explained
-
-### Three-Column Dashboard
-Tasks are automatically organized into three visual columns:
-- **Today** (Blue): Tasks due today
-- **Tomorrow** (Yellow): Tasks due tomorrow  
-- **Overdue** (Red): Past due tasks requiring attention
+### Environment Variables
+- `.env` files are **never committed** to version control
+- MongoDB credentials stored securely in `.env`
+- `.env.example` provided as template
+- Git history cleaned of sensitive data
 
 ### User Isolation
-Each user's tasks are completely isolated:
-- Tasks are stored with `userEmail` field
-- Backend filters queries by user email
-- No user can see another user's tasks
+- Tasks filtered by `userEmail` field
+- No cross-user data leakage
+- Backend enforces user-based queries
 
-### AI Classification
-The AI service analyzes task descriptions for keywords:
-- "urgent", "asap", "important" → High priority
-- "later", "eventually", "someday" → Low priority
-- "done", "finished", "completed" → Done status
-- Returns confidence score with prediction
+---
 
-✅ Backend API - Complete  
-✅ AI Service - Complete  
-🚧 Frontend - Coming Tomorrow  
-🚧 Integration - Coming Tomorrow  
+## 📈 Development Roadmap
 
-## Technologies Used
+### ✅ Phase 1 - Complete
+- [x] Backend REST API with MongoDB
+- [x] AI classification service with confidence scoring
+- [x] Next.js frontend with Turbopack
+- [x] Four-column dashboard layout
+- [x] AI productivity insights (priority-based)
+- [x] Smart completed navigation
+- [x] Task CRUD operations
+- [x] User isolation by email
+- [x] Modal state management
+- [x] Smooth animations and micro-interactions
+- [x] Completed archive with accordion
+- [x] Responsive design
 
-- **Backend**: Node.js, Express.js, MongoDB, Mongoose
-- **AI Service**: Python, Flask, Flask-CORS
-- **Frontend**: Next.js (coming soon)
-- **Database**: MongoDB
+### 🚧 Phase 2 - Future Enhancements
+- [ ] JWT authentication
+- [ ] Task collaboration (sharing/comments)
+- [ ] Real-time updates (WebSocket)
+- [ ] Push notifications
+- [ ] Dark mode toggle
+- [ ] Advanced ML models (BERT/GPT)
+- [ ] Calendar view
+- [ ] Task templates
+- [ ] Export/Import (CSV/JSON)
+- [ ] Mobile app (React Native)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how:
+
+1. **Fork** the repository
+2. **Create** your feature branch
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. **Commit** your changes
+   ```bash
+   git commit -m 'feat: add AmazingFeature'
+   ```
+4. **Push** to the branch
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. **Open** a Pull Request
+
+### Commit Message Convention
+```
+feat: add new feature
+fix: bug fix
+docs: documentation update
+style: formatting, no code change
+refactor: code restructuring
+test: add tests
+chore: maintenance
+```
+
+---
+
+## 📄 License
+
+This project is open source and available under the **MIT License**.
+
+---
+
+## 📞 Contact
+
+**Repository:** [github.com/abhijithk-ak/TaskPilot](https://github.com/abhijithk-ak/TaskPilot)
+
+**Issues:** [github.com/abhijithk-ak/TaskPilot/issues](https://github.com/abhijithk-ak/TaskPilot/issues)
+
+---
+
+## 🙏 Acknowledgments
+
+- **Next.js Team** - For the amazing Turbopack compiler
+- **MongoDB Atlas** - For free cloud database hosting
+- **Lucide Icons** - For beautiful, customizable icons
+- **Flask** - For lightweight Python web framework
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you found it helpful!**
+
+Made with ❤️ for better productivity
+
+</div>
