@@ -15,7 +15,7 @@ A modern, full-stack task management application featuring AI-powered task class
 - ⚡ **Intelligent Navigation** - Context-aware scrolling and state management
 - 📱 **Responsive Design** - Mobile-optimized with smooth animations
 - 👤 **User Isolation** - Email-based task ownership and filtering
-- 🔄 **Real-time Updates** - Instant task synchronization across all views
+- 🔄 **Instant UI Sync** - State-driven updates reflected immediately across all views (no page reloads)
 
 ### 🧠 **UX Principles Applied**
 - **Priority-based AI insights** (Overdue > Active > Completed > Empty)
@@ -23,6 +23,18 @@ A modern, full-stack task management application featuring AI-powered task class
 - **Smooth animations** (requestAnimationFrame, pure CSS, zero blinks)
 - **Modal state management** (pristine state on every open)
 - **Visual feedback** (green pulse highlights, chevron rotation, hover states)
+
+---
+
+## 🔎 Quick Navigation
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Quick Start](#-quick-start)
+- [Dashboard UX Logic](#-features-walkthrough)
+- [AI Task Classification](#-ai-task-categorization)
+- [API Reference](#-api-reference)
+- [Testing](#-testing)
+- [Development Roadmap](#-development-roadmap)
 
 ---
 
@@ -199,6 +211,8 @@ http://localhost:3000
 4. Auto-fills priority (High/Medium/Low) and status
 5. Shows confidence score with explanation
 
+🧼 **The Create Task modal resets AI state on every open to prevent stale predictions.**
+
 **Example:**
 ```
 Description: "Finish urgent presentation for tomorrow's meeting"
@@ -325,6 +339,10 @@ curl "http://localhost:5000/tasks?userEmail=test@example.com"
 ---
 
 ## 🔐 Security
+
+### Authentication Note
+TaskPilot uses a **mock email-based login** for assignment purposes.  
+No passwords are stored or transmitted. The email is used only to scope tasks per user.
 
 ### Environment Variables
 - `.env` files are **never committed** to version control
