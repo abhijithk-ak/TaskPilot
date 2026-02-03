@@ -620,13 +620,14 @@ export default function DashboardPage() {
                 marginLeft: 'auto',
                 fontStyle: 'italic'
               }}>
-                Reference & History
+                Reference & History · Click a task to view details
               </span>
             </div>
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-              gap: '12px' 
+              gap: '12px',
+              alignItems: 'start'
             }}>
               {completedArchiveTasks.map(task => {
                 const taskId = task._id || task.id;
@@ -636,7 +637,10 @@ export default function DashboardPage() {
                   <div 
                     key={taskId}
                     className={`task-card priority-${task.priority} done`}
-                    style={{ cursor: 'pointer' }}
+                    style={{ 
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease-out'
+                    }}
                   >
                     <div 
                       onClick={() => setExpandedTaskId(isExpanded ? null : taskId)}

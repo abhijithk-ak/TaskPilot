@@ -239,12 +239,14 @@ body {
   background: #fafafa;
   border: 1px solid #e5e7eb;
   border-left: 3px solid #22c55e;
+  transition: all 0.2s ease-out;
 }
 
 .completed-section .task-card:hover {
   opacity: 1;
   background: #ffffff;
   border-color: #d1d5db;
+  transform: none;
 }
 
 .completed-section .task-card .task-title {
