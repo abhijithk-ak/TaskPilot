@@ -342,3 +342,155 @@ Progress: 30/50 = 60% ❌ (meaningless for daily focus)
 ---
 
 *Implemented with clean architecture and industry-standard UX patterns* ✨
+
+##  Smart Completed Navigation
+
+### 3-Case Decision Tree
+
+**Purpose**: Context-aware navigation that adapts to content state
+
+```typescript
+// app/dashboard/page.tsx - handleCompletedClick
+
+const handleCompletedClick = () => {
+  const archiveCount = completedArchiveTasks.length;
+  const todayCompletedCount = todayTasks.filter(t => t.status === 'done').length;
+
+  // Case 1: Archive has items  Scroll to archive
+  if (archiveCount > 0) {
+    setIsCompletedOpen(true);
+    setTimeout(() => scrollToElement(completedRef), 100);
+    return;
+  }
+
+  // Case 2: No archive, but today has completed  Scroll to Today
+  if (todayCompletedCount > 0) {
+    scrollToElement(todayRef);
+    return;
+  }
+
+  // Case 3: No completed tasks anywhere  Show message
+  alert('No completed tasks yet. Complete some tasks to see them here!');
+};
+```
+
+### Case Analysis
+
+**Case 1: archiveCount > 0**
+- **Action**: Expand completed section + scroll to archive
+- **When**: User has completed tasks from previous days
+- **UX**: Focus on historical reference
+- **Highlight**: Green pulse on completed archive
+
+**Case 2: archiveCount = 0 && todayCompletedCount > 0**
+- **Action**: Scroll to Today column (bottom where completed tasks are)
+- **When**: User completed tasks today but no previous days
+- **UX**: Show today's accomplishments
+- **Highlight**: Soft pulse on completed tasks
+
+**Case 3: No completed tasks anywhere**
+- **Action**: Alert message, no scroll
+- **When**: User hasn't completed any tasks yet
+- **UX**: Graceful feedback, no surprise navigation
+- **Message**: "No completed tasks yet. Complete some tasks to see them here!"
+
+---
+
+### Completed Archive Rules
+
+**Definition**: Historical completed tasks (excludes today's completed)
+
+```typescript
+// Filter Logic
+const completedArchiveTasks = tasks.filter(task => {
+  if (task.status !== 'done') return false;
+  
+  const taskDate = task.completed_at 
+    ? new Date(task.completed_at).toDateString() 
+    : null;
+  
+  return taskDate && taskDate !== today.toDateString();
+});
+```
+
+**Key Rules**:
+1.  Only shows status='done' tasks
+2.  Excludes today's completed tasks (they stay in Today column)
+3.  Uses completed_at timestamp for accuracy
+4.  Sorted by completed_at descending (newest first)
+
+**UX Rationale**:
+- Today's completed tasks provide daily context (stay in Today)
+- Archive provides historical reference (separate from active work)
+- Clear separation between "what I did today" vs "what I did before"
+
+---
+
+### Scroll Behavior
+
+**requestAnimationFrame Pattern**:
+```typescript
+const scrollToElement = (ref: React.RefObject<HTMLDivElement>) => {
+  requestAnimationFrame(() => {
+    ref.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  });
+};
+```
+
+**Why requestAnimationFrame?**
+-  Guarantees DOM is ready before scroll
+-  Prevents scroll blink from state changes
+-  Aligns with browser paint cycle (60fps)
+-  No setTimeout race conditions
+
+**Highlight Pulse**:
+```css
+/* app/globals.css */
+.completed-highlight {
+  animation: pulseGlow 1.2s ease-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  50% { box-shadow: 0 0 20px 5px rgba(34, 197, 94, 0.3); }
+}
+```
+
+**Behavior**:
+- Plays once on scroll
+- Green glow (matches success color)
+- 1.2s duration (attention-grabbing but not annoying)
+- Pure CSS (no JavaScript state thrashing)
+
+---
+
+### Toggle Behavior
+
+**State-Aware Collapsing**:
+```typescript
+// app/dashboard/page.tsx
+const [isCompletedOpen, setIsCompletedOpen] = useState(false);
+const hasScrolledRef = useRef(false);
+
+// In handleCompletedClick
+if (isCompletedOpen && hasScrolledRef.current) {
+  setIsCompletedOpen(false); // Collapse without scrolling
+  return;
+}
+```
+
+**Rules**:
+1. **First click**: Expand + scroll to archive (if has items)
+2. **Second click**: Collapse (no scroll)
+3. **State-aware**: No surprise navigation
+4. **Predictable**: User controls when to expand/collapse
+
+**UX Benefits**:
+-  No surprise scrolling when already open
+-  Clean toggle on/off behavior
+-  Respects user's current scroll position
+-  Clear accordion pattern (expand/collapse)
+

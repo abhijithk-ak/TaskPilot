@@ -1,45 +1,57 @@
 import requests
-import json
 
-# Test AI Service
 def test_ai_service():
-    url = "http://localhost:8000"
-    
-    # Test health endpoint
+    """Test AI Service"""
+    # Health check
     try:
-        response = requests.get(f"{url}/health")
+        response = requests.get("http://localhost:8000/health")
         print(f"✅ AI Health: {response.json()}")
     except Exception as e:
         print(f"❌ AI Health failed: {e}")
+        return
     
-    # Test predict endpoint
+    # Predict endpoint
     try:
-        response = requests.post(f"{url}/predict", json={
-            "description": "Finish this urgently"
-        })
-        print(f"✅ AI Predict: {response.json()}")
+        response = requests.post(
+            "http://localhost:8000/predict",
+            json={"title": "Complete urgent report", "description": "This needs to be done ASAP"}
+        )
+        result = response.json()
+        print(f"✅ AI Predict: Priority={result.get('priority')}, Confidence={result.get('confidence', 0):.2f}")
     except Exception as e:
         print(f"❌ AI Predict failed: {e}")
 
-# Test Backend Service  
 def test_backend():
-    url = "http://localhost:5000"
-    
-    # Test health endpoint
+    """Test Backend"""
+    # Health check
     try:
-        response = requests.get(f"{url}/health")
+        response = requests.get("http://localhost:5000/health")
         print(f"✅ Backend Health: {response.json()}")
     except Exception as e:
         print(f"❌ Backend Health failed: {e}")
+        return
     
-    # Test task classification
+    # Classify endpoint
     try:
-        response = requests.post(f"{url}/tasks/classify", json={
-            "description": "Complete this project immediately"
-        })
-        print(f"✅ Task Classify: {response.json()}")
+        response = requests.post(
+            "http://localhost:5000/classify",
+            json={"title": "Review code", "description": "Please review the pull request"}
+        )
+        result = response.json()
+        print(f"✅ Backend Classify: Priority={result.get('priority')}")
     except Exception as e:
-        print(f"❌ Task Classify failed: {e}")
+        print(f"❌ Backend Classify failed: {e}")
+
+def test_frontend():
+    """Test Frontend"""
+    try:
+        response = requests.get("http://localhost:3000")
+        if response.status_code == 200:
+            print(f"✅ Frontend running: Status {response.status_code}, Size {len(response.content)} bytes")
+        else:
+            print(f"⚠️ Frontend status: {response.status_code}")
+    except Exception as e:
+        print(f"❌ Frontend failed: {e}")
 
 if __name__ == "__main__":
     print("🧪 Testing TaskPilot Services...\n")
@@ -50,4 +62,7 @@ if __name__ == "__main__":
     print("\nTesting Backend:")
     test_backend()
     
-    print("\n✅ Tests completed!")
+    print("\nTesting Frontend:")
+    test_frontend()
+    
+    print("\n✅ All tests completed!")
