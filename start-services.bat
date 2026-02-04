@@ -1,11 +1,11 @@
 @echo off
 echo Starting TaskPilot Backend...
 cd /d "%~dp0backend"
-start "TaskPilot Backend" cmd /k "python app.py"
+start "TaskPilot Backend" cmd /k "npm run dev"
 
 echo Starting TaskPilot AI Service...
 cd /d "%~dp0ai_service"
-start "TaskPilot AI Service" cmd /k "python main.py"
+start "TaskPilot AI Service" cmd /k "python app.py"
 
 echo Starting TaskPilot Frontend...
 cd /d "%~dp0frontend\taskpilot-frontend"
