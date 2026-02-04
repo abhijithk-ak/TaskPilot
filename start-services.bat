@@ -4,7 +4,7 @@ cd /d "%~dp0backend"
 start "TaskPilot Backend" cmd /k "npm run dev"
 
 echo Starting TaskPilot AI Service...
-cd /d "%~dp0ai_service"
+cd /d "%~dp0ai-service"
 start "TaskPilot AI Service" cmd /k "python app.py"
 
 echo Starting TaskPilot Frontend...
