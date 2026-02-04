@@ -236,9 +236,6 @@ Tasks: 4 total · 3 active · 1 completed · ⚠️ 1 overdue  [====] 50% done t
 - ✅ Proper spacing and typography
 - ✅ Thoughtful UX decisions documented
 
-### Interview Story:
-> "I analyzed reference UIs like Stitch to understand modern design principles. I took the color philosophy (soft neutrals + semantic colors) and compact insight approach, but adapted them for desktop. I avoided mobile-first patterns and kept the UI calm with white cards and subtle 3px accents. The AI insight section justifies the ML component while requiring minimal backend complexity."
-
 ---
 
 ## 🎯 Key Takeaways
