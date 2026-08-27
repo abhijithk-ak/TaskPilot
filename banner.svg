@@ -1,0 +1,137 @@
+<svg viewBox="0 0 800 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title-text {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 800;
+      font-size: 52px;
+      fill: url(#text-gradient);
+      animation: title-glow 3s ease-in-out infinite alternate;
+    }
+    
+    .subtitle-text {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      fill: #94a3b8;
+    }
+    
+    .badge-rect {
+      fill: rgba(255, 255, 255, 0.05);
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 1;
+      rx: 6px;
+    }
+
+    .badge-text {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      fill: #cbd5e1;
+    }
+    
+    .grid-pattern {
+      stroke: rgba(99, 102, 241, 0.07);
+      stroke-width: 1;
+    }
+    
+    .floating-node {
+      animation: float-around 8s ease-in-out infinite;
+    }
+    
+    .node-delay-1 { animation-delay: -2s; }
+    .node-delay-2 { animation-delay: -4s; }
+    .node-delay-3 { animation-delay: -6s; }
+    
+    .pulse-ring-element {
+      transform-origin: 670px 110px;
+      animation: pulse-ring 4s cubic-bezier(0.25, 0, 0, 1) infinite;
+    }
+
+    .pulse-dot-element {
+      transform-origin: 670px 110px;
+      animation: pulse-dot 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes title-glow {
+      0% {
+        filter: drop-shadow(0 0 2px rgba(99, 102, 241, 0.3)) drop-shadow(0 0 5px rgba(99, 102, 241, 0.1));
+      }
+      100% {
+        filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.6)) drop-shadow(0 0 25px rgba(236, 72, 153, 0.2));
+      }
+    }
+    
+    @keyframes float-around {
+      0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+      33% { transform: translateY(-12px) translateX(8px) rotate(5deg); }
+      66% { transform: translateY(6px) translateX(-10px) rotate(-5deg); }
+    }
+    
+    @keyframes pulse-ring {
+      0% { r: 8px; opacity: 0.8; stroke-width: 3; }
+      100% { r: 45px; opacity: 0; stroke-width: 1; }
+    }
+
+    @keyframes pulse-dot {
+      0% { r: 6px; fill: #6366f1; filter: drop-shadow(0 0 2px #6366f1); }
+      100% { r: 9px; fill: #ec4899; filter: drop-shadow(0 0 8px #ec4899); }
+    }
+  </style>
+
+  <defs>
+    <!-- Deep premium dark background gradient -->
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19" />
+      <stop offset="50%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    
+    <!-- Text glowing gradient -->
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818cf8" />
+      <stop offset="35%" stop-color="#c084fc" />
+      <stop offset="70%" stop-color="#f472b6" />
+      <stop offset="100%" stop-color="#fb7185" />
+    </linearGradient>
+    
+    <!-- Pulse gradient -->
+    <radialGradient id="pulse-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ec4899" stop-opacity="1" />
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="100%" height="100%" rx="12" fill="url(#bg-gradient)" />
+  
+  <!-- Subtle High-tech Grid -->
+  <path class="grid-pattern" d="M 0,30 L 800,30 M 0,60 L 800,60 M 0,90 L 800,90 M 0,120 L 800,120 M 0,150 L 800,150 M 0,180 L 800,180 M 50,0 L 50,220 M 100,0 L 100,220 M 150,0 L 150,220 M 200,0 L 200,220 M 250,0 L 250,220 M 300,0 L 300,220 M 350,0 L 350,220 M 400,0 L 400,220 M 450,0 L 450,220 M 500,0 L 500,220 M 550,0 L 550,220 M 600,0 L 600,220 M 650,0 L 650,220 M 700,0 L 700,220 M 750,0 L 750,220" />
+
+  <!-- Animated Radar Pulse (Right Side Component) -->
+  <circle cx="670" cy="110" r="10" fill="none" stroke="url(#text-gradient)" class="pulse-ring-element" />
+  <circle cx="670" cy="110" class="pulse-dot-element" />
+
+  <!-- Floating Abstract Particles / Nodes -->
+  <circle class="floating-node node-delay-1" cx="120" cy="60" r="5" fill="#818cf8" opacity="0.6" />
+  <circle class="floating-node node-delay-2" cx="720" cy="50" r="7" fill="#f472b6" opacity="0.5" />
+  <circle class="floating-node node-delay-3" cx="140" cy="160" r="4" fill="#c084fc" opacity="0.7" />
+  <circle class="floating-node node-delay-1" cx="580" cy="170" r="6" fill="#fb7185" opacity="0.4" />
+  
+  <!-- Main Title & Tagline -->
+  <text x="50" y="105" class="title-text">TaskPilot ✨</text>
+  <text x="52" y="145" class="subtitle-text">AI-Powered Task Management System with Production-Grade UX</text>
+
+  <!-- Badges inside SVG -->
+  <g transform="translate(52, 168)">
+    <rect width="90" height="22" class="badge-rect" />
+    <text x="45" y="15" text-anchor="middle" class="badge-text">🤖 NLP CLASSIFIER</text>
+  </g>
+  <g transform="translate(150, 168)">
+    <rect width="80" height="22" class="badge-rect" />
+    <text x="40" y="15" text-anchor="middle" class="badge-text">⚡ NEXT.JS 16</text>
+  </g>
+  <g transform="translate(238, 168)">
+    <rect width="80" height="22" class="badge-rect" />
+    <text x="40" y="15" text-anchor="middle" class="badge-text">🍃 MONGODB</text>
+  </g>
+</svg>
