@@ -3,10 +3,8 @@
 <!-- Animated Premium SVG Banner -->
 <svg viewBox="0 0 800 220" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 800px; height: auto; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin-bottom: 20px;">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;500&display=swap');
-    
     .title-text {
-      font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       font-weight: 800;
       font-size: 52px;
       fill: url(#text-gradient);
@@ -14,7 +12,7 @@
     }
     
     .subtitle-text {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       font-weight: 500;
       font-size: 18px;
       fill: #94a3b8;
@@ -28,7 +26,7 @@
     }
 
     .badge-text {
-      font-family: 'Inter', -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       font-weight: 600;
       font-size: 11px;
       fill: #cbd5e1;
