@@ -46,7 +46,6 @@ A modern, full-stack task management application featuring **AI-powered task cla
 *   [📡 API Reference](#-api-reference)
 *   [🧪 Testing](#-testing)
 *   [🛡️ Security Analysis](#️-security-analysis)
-*   [📈 Development Roadmap](#-development-roadmap)
 
 ---
 
@@ -262,17 +261,6 @@ Before committing and pushing this codebase to public Git repositories, please r
 
 ---
 
-## 📈 Development Roadmap
-
-### ✅ Phase 1 - Complete
-*   [x] Plain Node.js HTTP Backend (no dependency overhead)
-*   [x] AI classification service with Flask & NLP heuristics
-*   [x] Flattened Next.js frontend setup running on Turbopack
-*   [x] Password protection via **bcryptjs**
-*   [x] Priority-based productivity insights
-*   [x] State-driven task archiving system
-
----
 
 ## 🤝 Contributing
 
