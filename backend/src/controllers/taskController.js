@@ -1,12 +1,13 @@
 const Task = require('../models/Task');
 const axios = require('axios');
+const { sendJson, sendError } = require('../utils/http');
 
 exports.createTask = async (req, res) => {
   try {
     const task = await Task.create(req.body);
-    res.status(201).json(task);
+    sendJson(res, task, 201);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    sendError(res, error, 400);
   }
 };
 
@@ -15,9 +16,9 @@ exports.getTasks = async (req, res) => {
     const { userEmail } = req.query;
     const filter = userEmail ? { userEmail } : {};
     const tasks = await Task.find(filter);
-    res.json(tasks);
+    sendJson(res, tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendError(res, error, 500);
   }
 };
 
@@ -25,11 +26,11 @@ exports.getTaskById = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return sendError(res, 'Task not found', 404);
     }
-    res.json(task);
+    sendJson(res, task);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendError(res, error, 500);
   }
 };
 
@@ -40,11 +41,11 @@ exports.updateTask = async (req, res) => {
       runValidators: true
     });
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return sendError(res, 'Task not found', 404);
     }
-    res.json(task);
+    sendJson(res, task);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    sendError(res, error, 400);
   }
 };
 
@@ -52,11 +53,11 @@ exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return sendError(res, 'Task not found', 404);
     }
-    res.json({ message: 'Task deleted successfully' });
+    sendJson(res, { message: 'Task deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendError(res, error, 500);
   }
 };
 
@@ -65,11 +66,8 @@ exports.classifyTask = async (req, res) => {
     const response = await axios.post('http://localhost:8000/predict', {
       description: req.body.description
     });
-    res.json(response.data);
+    sendJson(res, response.data);
   } catch (error) {
-    res.status(500).json({ 
-      error: 'AI service unavailable',
-      details: error.message 
-    });
+    sendError(res, { error: 'AI service unavailable', details: error.message }, 500);
   }
 };
